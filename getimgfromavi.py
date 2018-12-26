@@ -2,21 +2,26 @@ import os
 import sys
 import cv2
 
-vediodir='20181214'
+vediodir='2018-03-30'
 
-distdir='estationimg'
+distdir='phoneimg'
 
-
+index=0
 
 if len(sys.argv)==3:
     vediodir=sys.argv[1]
     distdir=sys.argv[2]
+    
+if len(sys.argv)==4:
+    vediodir=sys.argv[1]
+    distdir=sys.argv[2]
+    index==sys.argv[3]
 
 l1srcdirs=os.listdir(vediodir)
     
 if not os.path.exists(distdir):
     os.mkdir(distdir)
-index=0
+
 for l1srcdir in l1srcdirs:
 
     if not (l1srcdir.split('.')[-1]=='avi' or l1srcdir.split('.')[-1]=='mp4'):
@@ -31,7 +36,7 @@ for l1srcdir in l1srcdirs:
     while 1:
     
         ret, frame = cap.read()
-        for i in range(100):
+        for i in range(10):
             ret, frame = cap.read()
 
         if frame is None:
