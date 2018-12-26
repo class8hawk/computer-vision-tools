@@ -15,7 +15,7 @@ if len(sys.argv)==3:
 if len(sys.argv)==4:
     vediodir=sys.argv[1]
     distdir=sys.argv[2]
-    index==sys.argv[3]
+    index=int(sys.argv[3])
 
 l1srcdirs=os.listdir(vediodir)
     
