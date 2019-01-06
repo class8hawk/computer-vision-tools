@@ -1,12 +1,31 @@
 import os
 import cv2
 import numpy as np
+import sys
+import argparse
 
-srcdir=r'lefteyeresresnegtest_96961818'
-dstdir=srcdir+'hsvres'
+def parse_args():
+  parser = argparse.ArgumentParser(description='convert the pic')
+  # general
+  parser.add_argument('--srcdir', default='', help='origin directory')
+  parser.add_argument('--dstdir', default='', help='Destination directory to save imgs')
+  #parser.add_argument('--bn-mom', type=float, default=0.9, help='bn mom')
+  
+  args = parser.parse_args()
+  return args
+
+  
+args = parse_args()  
+
+srcdir=args.srcdir
+dstdir=args.dstdir+'hsvres'
+
+if not os.path.exists(srcdir):
+    print('can not find:',srcdir)
+    sys.exit(1)
 
 if not os.path.exists(dstdir):
-	os.makedirs(dstdir)
+    os.makedirs(dstdir)
 passnum=0
 for index,jpgname in enumerate(os.listdir(srcdir)):
     jpgnamedir=os.path.join(srcdir,jpgname)
