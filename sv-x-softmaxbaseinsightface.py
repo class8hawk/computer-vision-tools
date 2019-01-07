@@ -41,6 +41,6 @@
     t=1.2
     h=s*(t-1)*(consallx+1)
     greatthany=mx.sym.broadcast_greater(cosallx,cos_t)
-    bodysv=mx.sym.broadcast_mul(greatthany,h)
+    bodysv=greatthany*h
     
     fc7 = fc7+body+bodysv
