@@ -25,6 +25,7 @@
     new_zy = cos_t*cos_m
     b = sin_t*sin_m
     new_zy = new_zy - b
+    costhta=new_zy
     new_zy = new_zy*s
     if args.easy_margin:
       zy_keep = zy
@@ -40,7 +41,7 @@
     cosallx=fc7/s
     t=1.2
     h=s*(t-1)*(consallx+1)
-    greatthany=mx.sym.broadcast_greater(cosallx,cos_t)
+    greatthany=mx.sym.broadcast_greater(cosallx,costhta)
     bodysv=greatthany*h
     
     fc7 = fc7+body+bodysv
