@@ -36,12 +36,13 @@
     diff = new_zy - zy
     diff = mx.sym.expand_dims(diff, 1)
     gt_one_hot = mx.sym.one_hot(gt_label, depth = args.num_classes, on_value = 1.0, off_value = 0.0)
+    inv_gt_one_hot=1-gt_one_hot
     body = mx.sym.broadcast_mul(gt_one_hot, diff)
     
     cosallx=fc7/s
     t=1.2
     h=s*(t-1)*(consallx+1)
     greatthany=mx.sym.broadcast_greater(cosallx,costhta)
-    bodysv=greatthany*h
+    bodysv=greatthany*h*inv_gt_one_hot
     
     fc7 = fc7+body+bodysv
