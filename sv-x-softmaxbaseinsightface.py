@@ -1,4 +1,5 @@
   elif args.loss_type==7:
+    print("===>hk sv")
     s = args.margin_s
     m = args.margin_m
     assert s>0.0
@@ -41,7 +42,8 @@
     
     cosallx=fc7/s
     t=1.2
-    h=s*(t-1)*(consallx+1)
+    h=s*(t-1)*(cosallx+1)
+    costhta=mx.sym.expand_dims(costhta, 1)
     greatthany=mx.sym.broadcast_greater(cosallx,costhta)
     bodysv=greatthany*h*inv_gt_one_hot
     
