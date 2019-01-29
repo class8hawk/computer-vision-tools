@@ -2,7 +2,7 @@
 import urllib, urllib.request, base64
 
 
-access_token = '24.de400468096bb90914f3cab87a37d243.2592000.1550149779.282335-15426577'
+access_token = 'xxxxxxxxxxxxxxx'
 url = 'https://aip.baidubce.com/rest/2.0/ocr/v1/general?access_token=' + access_token
 # 二进制方式打开图文件
 f = open(r'jiangzhuang.jpg', 'rb')
