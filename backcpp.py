@@ -1,7 +1,7 @@
 import os
 import os.path
-rootdir=r"F:\work"
-savedir=r"E:\backupework20171214" #千万不要放同一个盘下面 不然走远
+rootdir=r"/media/hasx/DATA5/code/pytorch"
+savedir=r"/media/hasx/DATA5/opencv/backcode201901/pytorch" #no one path
 
 
 
@@ -18,15 +18,20 @@ for parent,dirnames,filenames in os.walk(rootdir):
 		#print("processing %d file in total " % (index))
 		ext=os.path.splitext(filename)[1]
 		#print(ext)
-		if ext==".cpp" or ext==".h" or ext==".c" or ext==".cxx" or ext==".py":
+		if ext==".cpp" or ext==".h" or ext==".c" or ext==".cxx" or ext==".py" or ext==".sh":
 			saveparent=parent.replace(rootdir,savedir)
 			orgfilename=os.path.join(parent,filename)
 			copyfilename=os.path.join(saveparent,filename)
-			print("org:%s" % orgfilename)
-			print(copyfilename)
+			#print("org:%s" % orgfilename)
+			#print(copyfilename)
 			#print(os.path.join(saveparent,filename))
 			if not os.path.exists(saveparent):
 				os.makedirs(saveparent)
-			os.system ("copy %s %s" % (os.path.join(parent,filename), os.path.join(saveparent,filename)))
+			#linux
+			cmd="cp \"%s\" \"%s\"" % (os.path.join(parent,filename), os.path.join(saveparent,filename))
+			print(cmd)
+			os.system (cmd)
+			#windows
+			#os.system ("copy %s %s" % (os.path.join(parent,filename), os.path.join(saveparent,filename)))
 			if os.path.isfile (os.path.join(saveparent,filename)):
 				print ("Success")
