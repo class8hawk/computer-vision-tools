@@ -9,7 +9,7 @@ def parse_args():
   # general
   parser.add_argument('--srcdir', default='', help='origin directory')
   parser.add_argument('--dstdir', default='', help='Destination directory to save imgs')
-  parser.add_argument('--converttype', default='RESIZE', help='how to convert imgs')
+  parser.add_argument('--converttype', default='HSV', help='how to convert imgs')
   parser.add_argument('--dsth',type=int, default=96, help='which size convert imgs')
   parser.add_argument('--dstw',type=int, default=96, help='which size convert imgs')
   #parser.add_argument('--bn-mom', type=float, default=0.9, help='bn mom')
@@ -17,7 +17,7 @@ def parse_args():
   args = parser.parse_args()
   return args
 
-def getsobelimg(srcimg)
+def getsobelimg(srcimg):
   grayimg = cv2.cvtColor(srcimg, cv2.COLOR_BGR2GRAY)
   x = cv2.Sobel(grayimg,cv2.CV_16S,1,0)
   y = cv2.Sobel(grayimg,cv2.CV_16S,0,1)
