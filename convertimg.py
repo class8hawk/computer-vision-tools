@@ -7,9 +7,9 @@ import argparse
 def parse_args():
   parser = argparse.ArgumentParser(description='convert the pic')
   # general
-  parser.add_argument('--srcdir', default='', help='origin directory')
-  parser.add_argument('--dstdir', default='', help='Destination directory to save imgs')
-  parser.add_argument('--converttype', default='HSV', help='how to convert imgs')
+  parser.add_argument('--srcdir', default='0616test2true', help='origin directory')
+  parser.add_argument('--dstdir', default='0616test2true', help='Destination directory to save imgs')
+  parser.add_argument('--converttype', default='splitR', help='how to convert imgs')
   parser.add_argument('--dsth',type=int, default=96, help='which size convert imgs')
   parser.add_argument('--dstw',type=int, default=96, help='which size convert imgs')
   #parser.add_argument('--bn-mom', type=float, default=0.9, help='bn mom')
@@ -33,6 +33,9 @@ def convertimg(srcimg,args,dstdir):
     dstimg=cv2.resize(srcimg, (args.dsth,args.dstw))
   elif args.converttype=='SOBEL':
     dstimg=getsobelimg(srcimg)
+  elif args.converttype=='splitR':
+    b , g , dstimg = cv2.split(srcimg)
+
   savedir=os.path.join(dstdir,jpgname)
   cv2.imencode('.jpg',dstimg)[1].tofile(savedir) #python3 
     #cv2.imwrite(savedir,HSV)
@@ -61,6 +64,11 @@ elif args.converttype=='SOBEL':
     dstdir=args.dstdir+'SOBEL'
     if not os.path.exists(dstdir):
         os.makedirs(dstdir)
+elif args.converttype=='splitR':
+    dstdir=args.dstdir+'splitR'
+    if not os.path.exists(dstdir):
+        os.makedirs(dstdir)
+
 passnum=0
 allimgs=os.listdir(srcdir)
 totallen=len(allimgs)
