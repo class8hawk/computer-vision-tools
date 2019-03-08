@@ -3,14 +3,19 @@ import cv2
 import os
 import numpy as np
 import math
+import random
 
-jsonfile=open('newaddbg.json','r')
+jsonfile=open('train_no_poly.json','r')
 load_dict = json.load(jsonfile)
 jsonfile.close()
-picdir='addnormal'
+picdir='restricted'
+bgdir='normal'
+addnormalsrcdir='addnormal'
+if not os.path.exists(addnormalsrcdir):
+  os.makedirs(addnormalsrcdir)
 
-
-
+bgimagenames=os.listdir(bgdir)
+itbgimagenames=iter(bgimagenames)
 
 def rotate_image( src, angle, scale=1.):
   w = src.shape[1]
@@ -100,14 +105,23 @@ for bboxstr in load_dict['annotations']:
     picbboxs[bboximg_id]=[[bboxstr['bbox'],bboxstr['category_id'],bboxstr['id']]]
 print(maximgid,maxid)
 print(categorydict)
+isbreak=0
+
+
 for key in picbboxs:
+  if isbreak:
+    break
   img=cv2.imread(os.path.join(picdir,picid[key]))
+  imgh,imgw,c=img.shape
   for eachbox in picbboxs[key]:
+    if isbreak:
+      break
     repeattime=0
     if eachbox[1]==1:
       repeattime=2
     if eachbox[1]==3 or eachbox[1]==5:
       repeattime=1
+    
     for i in range(repeattime):
       
       lefttopx=int(eachbox[0][0])
@@ -116,15 +130,95 @@ for key in picbboxs:
       rightbottomy=int(eachbox[0][1]+eachbox[0][3])
       w=eachbox[0][2]
       h=eachbox[0][3]
-    
-    
+      roilefttopx=lefttopx-int(w*0.12)
+      roilefttopy=lefttopy-int(h*0.12)
+      roirightbottomx=rightbottomx+int(w*0.12)
+      roirightbottomy=rightbottomy+int(h*0.12)
+      
+      roilefttopx=roilefttopx if roilefttopx>0 else 0
+      roilefttopy=roilefttopy if roilefttopy>0 else 0
+      roirightbottomx=roirightbottomx if roirightbottomx<imgw-1 else imgw-1
+      roirightbottomy=roirightbottomy if roirightbottomy<imgh-1 else imgh-1
+      
       #print('w:',w,'h:',h)
-      roiimg=img[lefttopy:rightbottomy,lefttopx:rightbottomx]
-      if eachbox[2]>5500:
-        cv2.rectangle(img,(lefttopx,lefttopy),(rightbottomx,rightbottomy),(255,255,0),3)
-        cv2.imshow("img",img)
-        cv2.waitKey(0)
-    
+      roiimg=img[roilefttopy:roirightbottomy,roilefttopx:roirightbottomx]
+      
+      newxmin=lefttopx-roilefttopx
+      newymin=lefttopy-roilefttopy
+      newxmax=newxmin+w
+      newymax=newymin+h
+      
+      try:
+        bgjpgname=next(itbgimagenames)
+        
+        
+      except StopIteration:
+        isbreak=1
+        break
+      bgimg=cv2.imread(os.path.join(bgdir,bgjpgname))
+      bgh,bgw,bgc=bgimg.shape
+      roiimgh=roirightbottomy-roilefttopy
+      roiimgw=roirightbottomx-roilefttopx
+      if bgh<(roiimgh)*1.3 or bgw<(roiimgw)*1.3:
+        continue
+      bgroiminx=random.randint(0,bgw-roiimgw)
+      bgroiminy=random.randint(0,bgh-roiimgh)
+      bgroimaxx=bgroiminx+roiimgw
+      bgroimaxy=bgroiminy+roiimgh
+      bgimg[bgroiminy:bgroimaxy,bgroiminx:bgroimaxx]=roiimg
+        
+      resminx=bgroiminx+newxmin
+      resminy=bgroiminy+newymin
+      resmaxx=resminx+w
+      resmaxy=resminy+h
+      #cv2.rectangle(roiimg,(newxmin,newymin),(newxmax,newymax),(255,255,0),3)
+      #cv2.rectangle(bgimg,(resminx,resminy),(resmaxx,resmaxy),(255,255,0),3)
+      #cv2.imshow("bgimg",bgimg)
+      #cv2.waitKey(0)
+      cv2.imwrite(os.path.join(addnormalsrcdir,bgjpgname),bgimg)
+        
+        # imgjson
+      imagepartjson={}
+      imagepartjson["coco_url"]=''
+      imagepartjson["data_captured"]=''
+      imagepartjson["file_name"]=bgjpgname
+      imagepartjson["flickr_url"]=''
+      maximgid+=1
+      imagepartjson["id"]=maximgid
+        
+      imagepartjson["height"]=bgh
+      imagepartjson["width"]=bgw
+      imagepartjson["license"]=1
+        
+        
+        #bboxjson
+      bboxjson={}
+      maxid+=1
+      bboxjson["id"]=maxid
+      bboxjson["image_id"]=maximgid
+      bboxjson["category_id"]=eachbox[1]
+      bboxjson["iscrowd"]=0
+      bboxjson["segmentation"]=[]
+      bboxjson["area"]=[]
+      bboxjson["bbox"]=[resminx,resminy,resmaxx-resminx,resmaxy-resminy]
+      bboxjson["minAreaRect"]=[]
+      
+      load_dict['images'].append(imagepartjson)
+      load_dict['annotations'].append(bboxjson)
+      
+      
+      #print(imagepartjson)
+      #print(bboxjson)
+jsonData = json.dumps(load_dict)
+fileObject = open('newaddbg.json', 'w')
+fileObject.write(jsonData)
+fileObject.close()
+      #cv2.rectangle(roiimg,(newxmin,newymin),(newxmax,newymax),(255,255,0),3)
+      #cv2.imshow("show",roiimg)
+      #cv2.waitKey(0)
+      #{"coco_url": "", "data_captured": "", "file_name": "190125_181308_00174698.jpg", "flickr_url": "", "id": 466, "height": 345, "width": 802, "license": 1}
+#{"id": 5314, "image_id": 980, "category_id": 4, "iscrowd": 0, "segmentation": [], "area": [], "bbox": [170, 60, 55, 93], "minAreaRect": [[205, 155], [166, 61], [186, 53], [225, 147]]}
+#{'bbox': [512.0, 426.0, 177.0, 110.0], 'area': [], 'iscrowd': 0, 'id': 5075, 'segmentation': [], 'category_id': 5, 'image_id': 1459}  
 '''
 for key in picbboxs:
   img=cv2.imread(os.path.join(picdir,picid[key]))
@@ -144,9 +238,7 @@ for key in picbboxs:
   cv2.waitKey(0)
   #print(type(bboxstr['bbox']))
 '''
-  
-  
-#{'bbox': [512.0, 426.0, 177.0, 110.0], 'area': [], 'iscrowd': 0, 'id': 5075, 'segmentation': [], 'category_id': 5, 'image_id': 1459}  
+
 for each in load_dict['annotations']:
   #print(each)
   pass
