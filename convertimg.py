@@ -30,7 +30,7 @@ def convertimg(srcimg,args,dstdir):
   if args.converttype=='HSV':
     dstimg = cv2.cvtColor(srcimg, cv2.COLOR_BGR2HSV＿FULL)
   elif args.converttype=='RESIZE':
-    dstimg=cv2.resize(srcimg, (args.dsth,args.dstw))
+    dstimg=cv2.resize(srcimg, (args.dstw,args.dsth))
   elif args.converttype=='SOBEL':
     dstimg=getsobelimg(srcimg)
   elif args.converttype=='splitR':
