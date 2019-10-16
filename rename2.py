@@ -13,7 +13,7 @@ for index,jgpfile in enumerate(jpgpaths):
 	if img is None:
 		print(jpgname)
 		continue
-
+	
 	
 	savename=str(index)+'-人员'+str(index)+'.jpg'
 	savejpgname=os.path.join(renamefiledir,savename)
