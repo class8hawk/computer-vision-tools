@@ -48,7 +48,7 @@ def div_list(ls,n):
 	elif n == ls_len:
 		return [[i] for i in ls]
 	else:
-		j = int(ls_len/n)
+		j = int(ls_len/n)+1
 		k = ls_len%n
 		print(j,k)
 		### j,j,j,...(前面有n-1个j),j+k
