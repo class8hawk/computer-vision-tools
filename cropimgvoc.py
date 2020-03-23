@@ -48,13 +48,13 @@ if __name__ == '__main__':
     #imgy=190
     #imgx=470
     #imgy=208   #station5
-    #imgx=655
-    #imgy=565   #station10 patr1
+    imgx=655
+    imgy=565   #station10 patr1
     
     
-    imgx=696
-    imgy=302   #station10 part2
-    extname='part2'
+    #imgx=696
+    #imgy=302   #station10 part2
+    #extname='part2'
     
     
     
@@ -85,33 +85,49 @@ if __name__ == '__main__':
         print(xml_file)
  
         tree = ET.parse(xml_file)
+        #treecp=ET.parse(xml_file)
         root = tree.getroot()
+        #rootcp=treecp.getroot()
+        
+        
+        
+        #print(len(rootcp))
+        
+        print('root tpye:',type(root))
         if root.tag != 'annotation':
             raise Exception('pascal voc xml root element should be annotation, rather than {}'.format(root.tag))
         bbboxcount=0
-        
+        testcountbbox=0;
         
 
+        print('len:',len(root))
+        #for elem in root:
+            #print('before:',elem.tag)
         
         for elem in root:
-            current_parent = elem.tag
-            current_sub = None
-            object_name = None
-
+            
             if elem.tag=='size':
                 for subelem in elem:
                     if subelem.tag=='width':
                         subelem.text=str(cropsize)
                     if subelem.tag=='height':
                         subelem.text=str(cropsize)                  
-
+            #print('after:',elem.tag)
+            
+            
+            
+        subElement3=root.findall('object')
+        #for each in subElement3:
+            #rootcp.remove(each)
+        for elem in subElement3:
             if elem.tag == 'object':
+                testcountbbox+=1
                 for subelem in elem:
                     if subelem.tag=='bndbox':
                         
                         
                         for point in subelem:
-                            
+                            #print(str(testcountbbox),point.tag,point.text)
                             if point.tag=='xmin':
                                 xmin=int(point.text)
                                 xmin-=imgx
@@ -132,28 +148,29 @@ if __name__ == '__main__':
                         removenode=0
                         procwdith=xmax-xmin
                         procheight=ymax-ymin
+                        
                         if xmin<0:
                             if abs(xmin)>procwdith/2:
-                                print('remove:',f,xmin,ymin,xmax,ymax)
+                                #print('remove:',f,xmin,ymin,xmax,ymax)
                                 removenode=1
                             else:
                                 xmin=0
-                                
+                        
                         if ymin<0:
                             if abs(ymin)>procheight/2:
-                                print('remove:',f,xmin,ymin,xmax,ymax)
+                                #print('remove:',f,xmin,ymin,xmax,ymax)
                                 removenode=1
                             else:
                                 ymin=0
                         if xmax>cropsize-1:
                             if (xmax-cropsize+1)>procwdith/2:
-                                print('remove:',f,xmin,ymin,xmax,ymax)
+                                #print('remove:',f,xmin,ymin,xmax,ymax)
                                 removenode=1
                             else:
                                 xmax=cropsize-1
                         if ymax>cropsize-1:
                             if (ymax-cropsize+1)>procheight/2:
-                                print('remove:',f,xmin,ymin,xmax,ymax)
+                                #print('remove:',f,xmin,ymin,xmax,ymax)
                                 removenode=1
                             else:
                                 ymax=cropsize-1
@@ -161,8 +178,9 @@ if __name__ == '__main__':
                         
                         if removenode==0:
                             bbboxcount+=1
-                            for point in subelem:
                             
+                            for point in subelem:
+                                
                                 if point.tag=='xmin':
                                     point.text=str(xmin)
                                 if point.tag=='ymin':
@@ -172,11 +190,12 @@ if __name__ == '__main__':
                                 if point.tag=='ymax':
                                     point.text=str(ymax)
                         else:
+                            print('remove:',xmin,ymin,xmax,ymax)
                             root.remove(elem)
                 #
                         
                 
-
+        print("testcountbbox:",testcountbbox)
         if bbboxcount>0:
             
             jpgname=os.path.splitext(f)[0]+'.jpg'
