@@ -40,28 +40,12 @@ def addCatItem(name):
     category_set[name] = category_item_id
     return category_item_id
     
-    
-
-if __name__ == '__main__':
-    extname=''
-    #imgx=360  #station4
-    #imgy=190
-    #imgx=470
-    #imgy=208   #station5
-    imgx=655
-    imgy=565   #station10 patr1
-    
-    
-    #imgx=696
-    #imgy=302   #station10 part2
-    #extname='part2'
-    
-    
+def getcropimg(extname,imgx,imgy,jpgdir,xml_path):
     
     cropsize=512
 
-    jpgdir='testimg'
-    xml_path = 'testxml'
+    #jpgdir='4station'
+    #xml_path = '4station'
     save_crop_jpgdir="crop_jpg"
     save_crop_xml_path='crop_xml'
     if not os.path.exists(save_crop_xml_path):
@@ -113,7 +97,8 @@ if __name__ == '__main__':
                     if subelem.tag=='height':
                         subelem.text=str(cropsize)                  
             #print('after:',elem.tag)
-            
+            if elem.tag == 'filename':
+                elem.text+=extname
             
             
         subElement3=root.findall('object')
@@ -207,8 +192,35 @@ if __name__ == '__main__':
             tree.write(os.path.join(save_crop_xml_path , f))
 
 
+if __name__ == '__main__':
+    extname=''
+    #imgx=360  #4station
+    #imgy=190
+    #jpgdir='4station'
+    #xml_path = '4station'
+    
+    #imgx=470
+    #imgy=208   #5station
+    #jpgdir='5station'
+    #xml_path = '5station'
+    
+    #imgx=655
+    #imgy=565   #10station19201080 patr1
+    #jpgdir='10station19201080'
+    #xml_path = '10station19201080'    
+    
+    #imgx=696
+    #imgy=302   #10station19201080 part2
+    #extname='part2'
+    #jpgdir='10station19201080'
+    #xml_path = '10station19201080'    
+    getcropimg('',360,190,'4station','4station')
+    getcropimg('',470,208,'5station','5station')
+    getcropimg('',655,565,'10station19201080','10station19201080')
+    getcropimg('part2',696,302,'10station19201080','10station19201080')
+
                         
-        #tree.write(os.path.join(save_crop_xml_path , f))
+        
         
         
         
