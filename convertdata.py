@@ -1,3 +1,4 @@
+
 import os
 import json
 import numpy as np
@@ -18,8 +19,8 @@ class Fabric2COCO:
         self.img_id = 0
         self.ann_id = 0
         self.mode =mode
-        if not os.path.exists("/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/images/{}".format(self.mode + '2017')):
-            os.makedirs("/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/images/{}".format(self.mode + '2017'))
+        if not os.path.exists("/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/images/{}".format(self.mode + '2017')):
+            os.makedirs("/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/images/{}".format(self.mode + '2017'))
 
     def to_coco(self, anno_file_dir, img_dir):
         self._init_categories()
@@ -29,7 +30,7 @@ class Fabric2COCO:
                 continue
             # anno_result= pd.read_json(open(anno_file,"r"))
             annoFilepath = os.path.join(anno_file_dir, annoFile)
-            jsonFile = open(annoFilepath).read()
+            jsonFile = open(annoFilepath,encoding='GBK').read()
             anno_result = json.loads(jsonFile)
             # print(anno_result["shape"])
             # print(type(anno_result["name"]))
@@ -49,19 +50,20 @@ class Fabric2COCO:
                 # groupId = shapes["group_id"]
                 # ncount = 0 # same ID need count twice
 
-                if shapeType == "polygon" and Label == "point":
+                if shapeType == "polygon" and Label == "1":
                     keypoint_ = []
                     Points = shapes["points"]
                     for Point in Points:
                         keypoint_.append(round(Point[0], 2))
                         keypoint_.append(round(Point[1], 2))
-                        keypoint_.append(2)
+                        keypoint_.append(2)        
+                    #print(keypoint_)
                     # preGroupId = groupId
                     keypoints.append(keypoint_)
 
                     # ncount += 1
 
-                if shapeType == "rectangle" and Label == "mask":
+                if shapeType == "rectangle" and Label == "1":
                     bbox_ = []
                     Bboxs = shapes["points"]
                     for Bbox in Bboxs:
@@ -96,8 +98,8 @@ class Fabric2COCO:
             #     print('skip(False):', img_path)
             #     continue
             print(annoFilepath)
-            print('len(keypoints)', len(keypoints))
-            print('len(bboxs)', len(bboxs))
+            #print('len(keypoints)', len(keypoints))
+            #print('len(bboxs)', len(bboxs))
             # assert len(keypoints[0]) == 18
             if len(bboxs) != len(keypoints):
                 continue
@@ -108,7 +110,7 @@ class Fabric2COCO:
                 label = 1
                 print('len(keypoint)', len(keypoint))
                 print('len(bbox)', len(bbox))
-                if len(keypoint) != 18:
+                if len(keypoint) != 12:
                     continue
                 if len(bbox) != 4:
                     continue
@@ -180,7 +182,7 @@ class Fabric2COCO:
         return annotation, area
 
     def _cp_img(self, img_path):
-        shutil.copy(img_path, os.path.join("/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/images/{}".format(self.mode + '2017'), os.path.basename(img_path)))
+        shutil.copy(img_path, os.path.join("/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/images/{}".format(self.mode + '2017'), os.path.basename(img_path)))
 
     def _get_box(self, points):
         min_x = min_y = np.inf
@@ -196,7 +198,7 @@ class Fabric2COCO:
     def save_coco_json(self, instance, save_path):
         import json
         with open(save_path, 'w') as fp:
-            json.dump(instance, fp, indent=1, separators=(',', ': '))
+            json.dump(instance, fp, indent=1, separators=(',', ': '),ensure_ascii=False)
 
 
 def background(l1, l2, sufix):
@@ -269,14 +271,14 @@ if __name__ == '__main__':
 
     '''转换有瑕疵的样本为coco格式'''
     # name = '5env_00_crop.json'
-    img_dir = "/media/hasx/DATA1/livenessBackup/Datasets/orgImg/mask/face_detect/jpg"
-    anno_dir="/media/hasx/DATA1/livenessBackup/Datasets/orgImg/mask/face_detect/jpg"
+    img_dir = "pic"
+    anno_dir="pic"
     mode = "train"
     fabric2coco = Fabric2COCO(mode=mode)
     train_instance = fabric2coco.to_coco(anno_dir, img_dir)
-    if not os.path.exists("/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/annotations/"):
-        os.makedirs("/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/annotations/")
-    fabric2coco.save_coco_json(train_instance, "/media/hasx/DATA0/Project/Datasets/trainData/mask_centerNet/data/coco/annotations/"+'person_keypoints_{}2017.json'.format(mode))
+    if not os.path.exists("/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/annotations/"):
+        os.makedirs("/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/annotations/")
+    fabric2coco.save_coco_json(train_instance, "/media/hasx/DATA5/code/pytorch/CenterNet/CenterNet/data/coco/annotations/"+'person_keypoints_{}2017.json'.format(mode))
     # l1, l2 = 0, 0
     # # sufixes = ['under40s', 'beyond40s']
     # sufixes = ['all']
