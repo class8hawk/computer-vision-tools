@@ -190,6 +190,100 @@ def getcropimg(extname,imgx,imgy,jpgdir,xml_path):
             cv2.imwrite(os.path.join(save_crop_jpgdir,jpgname),cropimg)
             f=os.path.splitext(f)[0]+extname+'.xml'
             tree.write(os.path.join(save_crop_xml_path , f))
+            
+            
+            
+def gettypeimg(extname,jpgdir,xml_path):
+    
+  
+
+    #jpgdir='4station'
+    #xml_path = '4station'
+    save_crop_jpgdir="save_jpg"
+    save_crop_xml_path='save_xml'
+    if not os.path.exists(save_crop_xml_path):
+        os.makedirs(save_crop_xml_path)
+    if not os.path.exists(save_crop_jpgdir):
+        os.makedirs(save_crop_jpgdir)
+    
+    for f in os.listdir(xml_path):
+        if not f.endswith('.xml'):
+            continue
+        bndbox = dict()
+        size = dict()
+        current_image_id = None
+        current_category_id = None
+        file_name = None
+        size['width'] = None
+        size['height'] = None
+        size['depth'] = None
+
+        xml_file = os.path.join(xml_path, f)
+        print(xml_file)
+ 
+        tree = ET.parse(xml_file)
+        #treecp=ET.parse(xml_file)
+        root = tree.getroot()
+        #rootcp=treecp.getroot()
+        
+        
+        
+        #print(len(rootcp))
+        
+        print('root tpye:',type(root))
+        if root.tag != 'annotation':
+            raise Exception('pascal voc xml root element should be annotation, rather than {}'.format(root.tag))
+        bbboxcount=0
+        testcountbbox=0;
+        
+
+        print('len:',len(root))
+        #for elem in root:
+            #print('before:',elem.tag)
+
+            
+            
+        subElement3=root.findall('object')
+        #for each in subElement3:
+            #rootcp.remove(each)
+        for elem in subElement3:
+            if elem.tag == 'object':
+                testcountbbox+=1
+                for subelem in elem:
+                    if subelem.tag=='bndbox':
+                        
+                        
+                        for point in subelem:
+                            #print(str(testcountbbox),point.tag,point.text)
+                            if point.tag=='xmin':
+                                xmin=int(point.text)
+  
+                                #point.text=str(xmin)
+                            if point.tag=='ymin':
+                                ymin=int(point.text)
+ 
+                                #point.text=str(ymin)
+                            if point.tag=='xmax':
+                                xmax=int(point.text)
+        
+                                #point.text=str(xmax)
+                            if point.tag=='ymax':
+                                ymax=int(point.text)
+     
+                                #point.text=str(ymax)
+                        
+                        removenode=0
+                        procwdith=xmax-xmin
+                        procheight=ymax-ymin
+                        
+          
+                 
+        jpgname=os.path.splitext(f)[0]+'.jpg'
+        img=cv2.imread(os.path.join(jpgdir,jpgname))
+        cropimg=img[imgy:imgy+cropsize,imgx:imgx+cropsize,:]
+        jpgname=os.path.splitext(jpgname)[0]+extname+'.jpg'
+        cv2.imwrite(os.path.join(save_crop_jpgdir,jpgname),cropimg)
+
 
 
 if __name__ == '__main__':
